@@ -1,0 +1,471 @@
+{
+  "info": {
+    "_postman_id": "da032d9f-30ff-4ae9-9d94-197989ae4f28",
+    "name": "Todo List REST API",
+    "description": "### Welcome to Postman! This is your first collection. \n\nCollections are your starting point for building and testing APIs. You can use this one to:\n\n• Group related requests\n• Test your API in real-world scenarios\n• Document and share your requests\n\nUpdate the name and overview whenever you’re ready to make it yours.\n\n[Learn more about Postman Collections.](https://learning.postman.com/docs/collections/collections-overview/)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "56586351"
+  },
+  "item": [
+    {
+      "name": "Postman Bağlantı Testi",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Laravel öğren\",\r\n    \"description\": \"Postmandan görev oluşturdum\",\r\n    \"is_completed\":true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://todo-list-api.test/api/todos/1",
+          "protocol": "http",
+          "host": [
+            "todo-list-api",
+            "test"
+          ],
+          "path": [
+            "api",
+            "todos",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Todo Oluştur",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "//laravelden gelen Json cevabını okur \r",
+              "const response = pm.response.json(); \r",
+              "//Http durum kodunu kontroo eder\r",
+              "pm.test(\"Todo oluşturma kodu 201 olmalı\",function(){\r",
+              "    pm.response.to.have.status(201);\r",
+              "});\r",
+              "//gelen cevap json mı\r",
+              "pm.test(\"Cevap Json formatında olmalı\", function(){\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "//oluşturulan todonun bir id değeri olmalı\r",
+              "pm.test(\"Oluşturulan Todo ID içermeli\",function(){\r",
+              "    pm.expect(response.data).to.have.property(\"id\");\r",
+              "});\r",
+              "//gelen başlık gönderilen başlıkla aynı mı\r",
+              "pm.test(\"Todo başlığı doğru dönmeli\",function(){\r",
+              "    pm.expect(response.data.title).to.eql(\"Postman otomatik id testi\")\r",
+              "});\r",
+              "//oluşturulan kaydın idsini environment a kaydeder\r",
+              "pm.environment.set(\"todo_id\",response.data.id);\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Postman otomatik id testi\",\r\n    \"description\": \"oluşan ID environment içine kaydedilecek\",\r\n    \"is_completed\": false\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/todos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Geçersiz Tamamlama Değeri",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "//laravelden gelen Json cevabını okur \r",
+              "const response = pm.response.json(); \r",
+              "//Http durum kodunu kontroo eder\r",
+              "pm.test(\"Todo oluşturma kodu 422 olmalı\",function(){\r",
+              "    pm.response.to.have.status(422);\r",
+              "});\r",
+              "//gelen cevap json mı\r",
+              "pm.test(\"Cevap Json formatında olmalı\", function(){\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "//oluşturulan todonun bir id değeri olmalı\r",
+              "pm.test(\"Errors alanı içermeli\",function(){\r",
+              "    pm.expect(response).to.have.property(\"errors\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"is_completed validation hatası bulunmalı\", function () {\r",
+              "    pm.expect(response.errors).to.have.property(\"is_completed\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"is_completed hata listesi boş olmamalı\", function () {\r",
+              "    pm.expect(response.errors.is_completed).to.be.an(\"array\").that.is.not.empty;\r",
+              "});\r",
+              "\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\": \"Geçersiz değer testi\",\r\n    \"description\": \"is_completed alanına yanlış veri gönderiliyor\",\r\n    \"is_completed\": \"tamamlandı\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/todos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Başlıksız Todo Oluştur",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "//laravelden gelen Json cevabını okur \r",
+              "const response = pm.response.json(); \r",
+              "//Http durum kodunu kontroo eder\r",
+              "pm.test(\"Todo oluşturma kodu 422 olmalı\",function(){\r",
+              "    pm.response.to.have.status(422);\r",
+              "});\r",
+              "//gelen cevap json mı\r",
+              "pm.test(\"Cevap Json formatında olmalı\", function(){\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Errors alanı bulunmalı\", function () {\r",
+              "    pm.expect(response).to.have.property(\"errors\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Title validation hatası bulunmalı\", function () {\r",
+              "    pm.expect(response.errors).to.have.property(\"title\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Title hata listesi boş olmamalı\", function () {\r",
+              "    pm.expect(response.errors.title).to.be.an(\"array\").that.is.not.empty;\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \r\n    \"description\": \"bu istekte title gönderilmedi\",\r\n    \"is_completed\": false\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/todos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Todo Listesini Getir",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response =pm.response.json();\r",
+              "//istek başarılı mı\r",
+              "pm.test(\"Todo listesi durum kodu 200 olmalı\",function(){\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "//gelen cevap json mı\r",
+              "pm.test(\"Cevap JSON formatında olmalı\",function(){\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "//data alanı liste mi\r",
+              "pm.test(\"Data alanı bir liste olmalı\",function(){\r",
+              "    pm.expect(response.data).to.be.an(\"array\");\r",
+              "});\r",
+              "//listede en az bir todo var mı\r",
+              "pm.test(\"Listede en az bir Todo bulunmalı\",function(){\r",
+              "    pm.expect(response.data.length).to.be.above(0);\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/todos",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Tek Todo Getir",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();\r",
+              "const expectedId = Number(pm.environment.get(\"todo_id\"));\r",
+              "\r",
+              "pm.test(\"Tek Todo getirme kodu 200 olmalı\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Cevap JSON formatında olmalı\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Data alanı bir nesne olmalı\", function () {\r",
+              "    pm.expect(response.data).to.be.an(\"object\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Doğru Todo ID dönmeli\", function () {\r",
+              "    pm.expect(response.data.id).to.eql(expectedId);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Todo başlık alanı içermeli\", function () {\r",
+              "    pm.expect(response.data).to.have.property(\"title\");\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/todos/{{todo_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos",
+            "{{todo_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Todo Güncelle",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "//laravelden dönen cevabı alır\r",
+              "const response =pm.response.json(); \r",
+              "//Patche gönderdiğimiz Json verisini okur\r",
+              "const requestBody = JSON.parse(pm.request.body.raw);\r",
+              "//enviroment içindeki todo idsini sayı olarak alır\r",
+              "const expectedId =Number(pm.environment.get(\"todo_id\"));\r",
+              "\r",
+              "pm.test(\"Todo güncelleme kodu 200 olmalı\", function () {\r",
+              "    pm.response.to.have.status(200);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Cevap JSON formatında olmalı\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Data alanı bir nesne olmalı\", function () {\r",
+              "    pm.expect(response.data).to.be.an(\"object\");\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Doğru Todo güncellenmeli\", function () {\r",
+              "    pm.expect(response.data.id).to.eql(expectedId);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Gönderilen alanlar doğru güncellenmeli\",function(){\r",
+              "    Object.keys(requestBody).forEach(function(field){\r",
+              "        pm.expect(response.data[field]).to.eql(requestBody[field]);\r",
+              "    });\r",
+              "});\r",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "PATCH",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"title\":\"Güncellenmiş Todo\",\r\n    \"is_completed\": true\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{base_url}}/todos/{{todo_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos",
+            "{{todo_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Todo Sil",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Todo silme kodu 204 olmalı\", function () {\r",
+              "    pm.response.to.have.status(204);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Silme cevabı boş olmalı\", function () {\r",
+              "    pm.expect(pm.response.text()).to.eql(\"\");\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/todos/{{todo_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos",
+            "{{todo_id}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Silinen Todo Bulunamamalı",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Silinen Todo için 404 dönmeli\", function () {\r",
+              "    pm.response.to.have.status(404);\r",
+              "});\r",
+              "\r",
+              "pm.test(\"Cevap JSON formatında olmalı\", function () {\r",
+              "    pm.response.to.be.json;\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/todos/{{todo_id}}",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "todos",
+            "{{todo_id}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
