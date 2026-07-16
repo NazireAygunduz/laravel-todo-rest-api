@@ -1,58 +1,220 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Laravel Todo REST API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Bu proje, Laravel kullanılarak geliştirilmiş frontend içermeyen bir Todo List REST API uygulamasıdır.
 
-## About Laravel
+Todo oluşturma, listeleme, görüntüleme, güncelleme ve silme işlemleri Postman üzerinden gerçekleştirilmiştir. API için olumlu ve olumsuz otomatik test senaryoları hazırlanmıştır.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Projenin Amacı
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Bu projenin amacı:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Laravel ile REST API geliştirmek
+- CRUD işlemlerini uygulamak
+- Frontend kullanmadan Postman ile API istekleri göndermek
+- Validation işlemlerini test etmek
+- API cevaplarını PASS/FAIL testleriyle doğrulamak
+- API test prosedürlerini incelemek ve raporlamaktır
 
-## Learning Laravel
+## Kullanılan Teknolojiler
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- PHP
+- Laravel
+- SQLite
+- Laravel Herd
+- Postman
+- Git ve GitHub
+- JSON
+- REST API
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Sistem Yapısı
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```text
+Postman
+   ↓ HTTP isteği
+Laravel Route
+   ↓
+TodoController
+   ↓
+Todo Model
+   ↓
+SQLite Veritabanı
+   ↓
+JSON cevap
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Veritabanı Yapısı
 
-## Contributing
+`todos` tablosunda aşağıdaki alanlar bulunmaktadır:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Alan | Açıklama |
+|---|---|
+| `id` | Todo kaydının benzersiz numarası |
+| `title` | Görevin başlığı |
+| `description` | Görevin açıklaması |
+| `is_completed` | Görevin tamamlanma durumu |
+| `created_at` | Oluşturulma tarihi |
+| `updated_at` | Güncellenme tarihi |
 
-## Code of Conduct
+## API Endpointleri
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+| Metot | Endpoint | İşlem |
+|---|---|---|
+| POST | `/api/todos` | Yeni Todo oluşturur |
+| GET | `/api/todos` | Bütün Todo kayıtlarını listeler |
+| GET | `/api/todos/{id}` | Belirtilen Todo kaydını getirir |
+| PATCH | `/api/todos/{id}` | Belirtilen Todo kaydını günceller |
+| DELETE | `/api/todos/{id}` | Belirtilen Todo kaydını siler |
 
-## Security Vulnerabilities
+## Örnek Todo Oluşturma İsteği
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```http
+POST /api/todos
+```
 
-## License
+```json
+{
+  "title": "Laravel öğren",
+  "description": "Todo REST API projesini tamamla",
+  "is_completed": false
+}
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Başarılı cevap:
+
+```json
+{
+  "message": "Todo oluşturuldu!",
+  "data": {
+    "id": 1,
+    "title": "Laravel öğren",
+    "description": "Todo REST API projesini tamamla",
+    "is_completed": false
+  }
+}
+```
+
+Beklenen HTTP durum kodu:
+
+```text
+201 Created
+```
+
+## Kullanılan HTTP Durum Kodları
+
+| Kod | Açıklama |
+|---:|---|
+| `200` | Listeleme, görüntüleme veya güncelleme başarılı |
+| `201` | Yeni Todo başarıyla oluşturuldu |
+| `204` | Todo başarıyla silindi |
+| `404` | İstenen Todo bulunamadı |
+| `422` | Gönderilen veri validation kurallarına uymadı |
+
+## Validation Kuralları
+
+- `title` alanı zorunludur
+- `title` metin olmalıdır
+- `title` en fazla 255 karakter olabilir
+- `description` boş bırakılabilir
+- `description` gönderilirse metin olmalıdır
+- `is_completed` boolean, yani `true` veya `false` olmalıdır
+
+## Postman Testleri
+
+Projede aşağıdaki testler hazırlanmıştır:
+
+- Todo oluşturma testi
+- Todo listesini getirme testi
+- Tek Todo getirme testi
+- Todo güncelleme testi
+- Todo silme testi
+- Silinen Todo için 404 testi
+- Başlıksız Todo oluşturma testi
+- Geçersiz `is_completed` değeri testi
+- JSON cevap kontrolü
+- Durum kodu kontrolü
+- ID ve veri alanlarının kontrolü
+
+Postman testlerinin sonucunda beklenti doğruysa `PASSED`, yanlışsa `FAILED` sonucu gösterilir.
+
+## Postman Dosyaları
+
+Collection ve Environment dosyaları `postman` klasöründe bulunmaktadır:
+
+```text
+postman/
+├── Todo List REST API.postman_collection.json
+└── Todo-Local.postman_environment.json
+```
+
+Postman Collection içerisinde `base_url` ve `todo_id` değişkenleri kullanılmaktadır.
+
+Yerel Herd adresi:
+
+```text
+http://todo-list-api.test/api
+```
+
+## Kurulum
+
+Projeyi bilgisayara indirin:
+
+```bash
+git clone https://github.com/NazireAygunduz/laravel-todo-rest-api.git
+cd laravel-todo-rest-api
+```
+
+Gerekli PHP paketlerini kurun:
+
+```bash
+composer install
+```
+
+`.env` dosyasını oluşturun:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Uygulama anahtarını oluşturun:
+
+```bash
+php artisan key:generate
+```
+
+SQLite veritabanı dosyasını oluşturun:
+
+```powershell
+New-Item database/database.sqlite -ItemType File
+```
+
+Migration işlemlerini çalıştırın:
+
+```bash
+php artisan migrate
+```
+
+Projeyi Laravel Herd ile veya aşağıdaki komutla çalıştırabilirsiniz:
+
+```bash
+php artisan serve
+```
+
+`php artisan serve` kullanıldığında Postman `base_url` değeri şu şekilde değiştirilmelidir:
+
+```text
+http://127.0.0.1:8000/api
+```
+
+## Proje Yapısı
+
+```text
+app/Models/Todo.php
+app/Http/Controllers/TodoController.php
+database/migrations/
+routes/api.php
+postman/
+```
+
+## Sonuç
+
+Bu projede Laravel kullanılarak frontend içermeyen bir Todo List REST API geliştirilmiştir. CRUD işlemleri Postman üzerinden çalıştırılmış; olumlu ve olumsuz test senaryoları otomatik PASS/FAIL kontrolleriyle doğrulanmıştır.
