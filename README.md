@@ -1,175 +1,198 @@
-# Laravel Todo REST API
+# Laravel + React Todo List
 
-Bu proje, Laravel kullanılarak geliştirilmiş frontend içermeyen bir Todo List REST API uygulamasıdır.
+Bu proje, **Laravel REST API**, **React**, **TypeScript** ve **SQLite** kullanılarak geliştirilmiş full-stack bir Todo List uygulamasıdır.
 
-Todo oluşturma, listeleme, görüntüleme, güncelleme ve silme işlemleri Postman üzerinden gerçekleştirilmiştir. API için olumlu ve olumsuz otomatik test senaryoları hazırlanmıştır.
+Proje ilk aşamada kullanıcı arayüzü bulunmadan hazırlanmış ve CRUD işlemleri Postman üzerinden test edilmiştir. Daha sonra React ile bir kullanıcı arayüzü geliştirilerek Laravel API ile bağlantı kurulmuştur.
 
-## Projenin Amacı
+Uygulamada oluşturulan görevler yalnızca tarayıcıda tutulmaz. React arayüzünden gönderilen HTTP istekleri Laravel tarafından işlenir ve görevler SQLite veritabanına kaydedilir. Bu nedenle sayfa yenilendiğinde veriler kaybolmaz.
 
-Bu projenin amacı:
+## Uygulama Özellikleri
 
-- Laravel ile REST API geliştirmek
-- CRUD işlemlerini uygulamak
-- Frontend kullanmadan Postman ile API istekleri göndermek
-- Validation işlemlerini test etmek
-- API cevaplarını PASS/FAIL testleriyle doğrulamak
-- API test prosedürlerini incelemek ve raporlamaktır
+- Yeni görev oluşturma
+- Kayıtlı görevleri listeleme
+- Görevleri tamamlandı olarak işaretleme
+- Tamamlanan görevleri geri alma
+- Görev silme
+- Verileri SQLite veritabanında kalıcı olarak saklama
+- Laravel validation işlemleri
+- Postman ile olumlu ve olumsuz API testleri
+- Mobil cihazlara uyumlu React arayüzü
 
 ## Kullanılan Teknolojiler
 
+### Backend
+
 - PHP
 - Laravel
+- Laravel REST API
 - SQLite
 - Laravel Herd
-- Postman
-- Git ve GitHub
-- JSON
-- REST API
 
-## Sistem Yapısı
+### Frontend
+
+- React
+- TypeScript
+- Vite
+- CSS
+- Fetch API
+
+### Test ve Sürüm Kontrolü
+
+- Postman
+- Git
+- GitHub
+- JSON
+
+## Uygulamanın Çalışma Yapısı
 
 ```text
-Postman
+Kullanıcı
+   ↓
+React ve TypeScript arayüzü
    ↓ HTTP isteği
-Laravel Route
+Laravel REST API
    ↓
 TodoController
    ↓
 Todo Model
    ↓
-SQLite Veritabanı
-   ↓
-JSON cevap
+SQLite veritabanı
+   ↓ JSON cevap
+React arayüzü
 ```
 
-## Veritabanı Yapısı
+Kullanıcı React arayüzünde bir işlem yaptığında `fetch` kullanılarak Laravel API'ye istek gönderilir.
 
-`todos` tablosunda aşağıdaki alanlar bulunmaktadır:
+Örneğin yeni bir görev eklendiğinde:
 
-| Alan | Açıklama |
-|---|---|
-| `id` | Todo kaydının benzersiz numarası |
-| `title` | Görevin başlığı |
-| `description` | Görevin açıklaması |
-| `is_completed` | Görevin tamamlanma durumu |
-| `created_at` | Oluşturulma tarihi |
-| `updated_at` | Güncellenme tarihi |
+```text
+React formu
+   ↓ POST /api/todos
+Laravel
+   ↓
+SQLite veritabanı
+   ↓
+Oluşturulan görev JSON olarak React'e gönderilir
+```
+
+## CRUD İşlemleri
+
+| CRUD | Uygulamadaki işlem | HTTP metodu |
+|---|---|---|
+| Create | Yeni görev ekleme | POST |
+| Read | Görevleri listeleme ve görüntüleme | GET |
+| Update | Tamamla ve Geri Al işlemi | PATCH |
+| Delete | Görev silme | DELETE |
 
 ## API Endpointleri
 
-| Metot | Endpoint | İşlem |
+| Metot | Endpoint | Açıklama |
 |---|---|---|
-| POST | `/api/todos` | Yeni Todo oluşturur |
-| GET | `/api/todos` | Bütün Todo kayıtlarını listeler |
-| GET | `/api/todos/{id}` | Belirtilen Todo kaydını getirir |
-| PATCH | `/api/todos/{id}` | Belirtilen Todo kaydını günceller |
-| DELETE | `/api/todos/{id}` | Belirtilen Todo kaydını siler |
+| GET | `/api/test` | API'nin çalışıp çalışmadığını kontrol eder |
+| GET | `/api/todos` | Bütün görevleri listeler |
+| POST | `/api/todos` | Yeni görev oluşturur |
+| GET | `/api/todos/{id}` | ID değerine göre tek bir görevi getirir |
+| PATCH | `/api/todos/{id}` | Görev bilgilerini veya tamamlanma durumunu günceller |
+| DELETE | `/api/todos/{id}` | Görevi siler |
 
-## Örnek Todo Oluşturma İsteği
+## Örnek Görev Oluşturma İsteği
 
 ```http
 POST /api/todos
+Content-Type: application/json
+Accept: application/json
 ```
 
 ```json
 {
-  "title": "Laravel öğren",
-  "description": "Todo REST API projesini tamamla",
+  "title": "Laravel projesini tamamla",
+  "description": "React arayüzünü Laravel API'ye bağla",
   "is_completed": false
 }
 ```
 
-Başarılı cevap:
+Başarılı cevap örneği:
 
 ```json
 {
   "message": "Todo oluşturuldu!",
   "data": {
     "id": 1,
-    "title": "Laravel öğren",
-    "description": "Todo REST API projesini tamamla",
+    "title": "Laravel projesini tamamla",
+    "description": "React arayüzünü Laravel API'ye bağla",
     "is_completed": false
   }
 }
 ```
 
-Beklenen HTTP durum kodu:
+## Veritabanı Yapısı
+
+Görevler SQLite veritabanındaki `todos` tablosunda tutulmaktadır.
+
+| Alan | Açıklama |
+|---|---|
+| `id` | Görevin benzersiz numarası |
+| `title` | Görev başlığı |
+| `description` | Görev açıklaması |
+| `is_completed` | Görevin tamamlanma durumu |
+| `created_at` | Görevin oluşturulma tarihi |
+| `updated_at` | Görevin son güncellenme tarihi |
+
+SQLite veritabanı dosyası Laravel projesinde aşağıdaki konumda bulunur:
 
 ```text
-201 Created
+database/database.sqlite
 ```
 
-## Kullanılan HTTP Durum Kodları
-
-| Kod | Açıklama |
-|---:|---|
-| `200` | Listeleme, görüntüleme veya güncelleme başarılı |
-| `201` | Yeni Todo başarıyla oluşturuldu |
-| `204` | Todo başarıyla silindi |
-| `404` | İstenen Todo bulunamadı |
-| `422` | Gönderilen veri validation kurallarına uymadı |
-
-## Validation Kuralları
-
-- `title` alanı zorunludur
-- `title` metin olmalıdır
-- `title` en fazla 255 karakter olabilir
-- `description` boş bırakılabilir
-- `description` gönderilirse metin olmalıdır
-- `is_completed` boolean, yani `true` veya `false` olmalıdır
-
-## Postman Testleri
-
-Projede aşağıdaki testler hazırlanmıştır:
-
-- Todo oluşturma testi
-- Todo listesini getirme testi
-- Tek Todo getirme testi
-- Todo güncelleme testi
-- Todo silme testi
-- Silinen Todo için 404 testi
-- Başlıksız Todo oluşturma testi
-- Geçersiz `is_completed` değeri testi
-- JSON cevap kontrolü
-- Durum kodu kontrolü
-- ID ve veri alanlarının kontrolü
-
-Postman testlerinin sonucunda beklenti doğruysa `PASSED`, yanlışsa `FAILED` sonucu gösterilir.
-
-## Postman Dosyaları
-
-Collection ve Environment dosyaları `postman` klasöründe bulunmaktadır:
+## Proje Yapısı
 
 ```text
-postman/
-├── Todo List REST API.postman_collection.json
-└── Todo-Local.postman_environment.json
-```
-
-Postman Collection içerisinde `base_url` ve `todo_id` değişkenleri kullanılmaktadır.
-
-Yerel Herd adresi:
-
-```text
-http://todo-list-api.test/api
+laravel-todo-rest-api/
+├── app/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── TodoController.php
+│   └── Models/
+│       └── Todo.php
+├── database/
+│   ├── database.sqlite
+│   └── migrations/
+├── frontend/
+│   ├── public/
+│   ├── src/
+│   │   ├── App.tsx
+│   │   ├── App.css
+│   │   ├── index.css
+│   │   └── main.tsx
+│   ├── .env.example
+│   ├── package.json
+│   └── vite.config.ts
+├── postman/
+├── routes/
+│   └── api.php
+├── artisan
+├── composer.json
+└── README.md
 ```
 
 ## Kurulum
 
-Projeyi bilgisayara indirin:
+Projeyi bilgisayarınıza indirin:
 
 ```bash
 git clone https://github.com/NazireAygunduz/laravel-todo-rest-api.git
 cd laravel-todo-rest-api
 ```
 
-Gerekli PHP paketlerini kurun:
+### Laravel Backend Kurulumu
+
+Gerekli PHP paketlerini yükleyin:
 
 ```bash
 composer install
 ```
 
-`.env` dosyasını oluşturun:
+Laravel ortam dosyasını oluşturun:
 
 ```powershell
 Copy-Item .env.example .env
@@ -193,28 +216,129 @@ Migration işlemlerini çalıştırın:
 php artisan migrate
 ```
 
-Projeyi Laravel Herd ile veya aşağıdaki komutla çalıştırabilirsiniz:
+Laravel backend'i çalıştırın:
 
 ```bash
 php artisan serve
 ```
 
-`php artisan serve` kullanıldığında Postman `base_url` değeri şu şekilde değiştirilmelidir:
+Bu komut kullanıldığında Laravel genellikle aşağıdaki adreste çalışır:
 
 ```text
-http://127.0.0.1:8000/api
+http://127.0.0.1:8000
 ```
 
-## Proje Yapısı
+Laravel Herd kullanılıyorsa proje adresi şu şekilde olabilir:
 
 ```text
-app/Models/Todo.php
-app/Http/Controllers/TodoController.php
-database/migrations/
-routes/api.php
-postman/
+http://todo-list-api.test
 ```
+
+### React Frontend Kurulumu
+
+Yeni bir terminal açın ve frontend klasörüne girin:
+
+```bash
+cd frontend
+```
+
+Node.js paketlerini yükleyin:
+
+```bash
+npm install
+```
+
+Frontend ortam dosyasını oluşturun:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+`php artisan serve` kullanılıyorsa `frontend/.env` dosyasının içeriği:
+
+```env
+VITE_API_URL=http://127.0.0.1:8000/api
+```
+
+Laravel Herd kullanılıyorsa:
+
+```env
+VITE_API_URL=http://todo-list-api.test/api
+```
+
+React uygulamasını çalıştırın:
+
+```bash
+npm run dev
+```
+
+Terminalde gösterilen adresi tarayıcıda açın:
+
+```text
+http://localhost:5173
+```
+
+Port kullanımda ise Vite uygulamayı `5174` gibi farklı bir portta çalıştırabilir.
+
+> React uygulaması VS Code Live Server ile çalıştırılmamalıdır. Frontend'i başlatmak için `npm run dev` komutu kullanılmalıdır.
+
+## Postman Testleri
+
+API endpointleri Postman üzerinden test edilmiştir.
+
+Hazırlanan testlerden bazıları:
+
+- Yeni görev oluşturma testi
+- Bütün görevleri listeleme testi
+- ID ile tek görev getirme testi
+- Görev güncelleme testi
+- Görev silme testi
+- Silinen görev için `404` kontrolü
+- Başlıksız görev oluşturma testi
+- Geçersiz `is_completed` değeri testi
+- JSON cevap yapısı kontrolü
+- HTTP durum kodu kontrolü
+
+Postman Collection ve Environment dosyaları `postman` klasöründe bulunmaktadır.
+
+## HTTP Durum Kodları
+
+| Kod | Açıklama |
+|---:|---|
+| `200` | Listeleme, görüntüleme veya güncelleme başarılı |
+| `201` | Yeni görev başarıyla oluşturuldu |
+| `204` | Görev başarıyla silindi |
+| `404` | İstenen görev bulunamadı |
+| `422` | Gönderilen veri validation kurallarına uygun değil |
+
+## Validation Kuralları
+
+- `title` alanı zorunludur.
+- `title` metin türünde olmalıdır.
+- `title` en fazla 255 karakter olabilir.
+- `description` boş bırakılabilir.
+- `description` gönderilirse metin türünde olmalıdır.
+- `is_completed` değeri `true` veya `false` olmalıdır.
+
+## Projenin Kazandırdıkları
+
+Bu proje kapsamında:
+
+- Laravel ile REST API geliştirme
+- Route, controller ve model kullanımı
+- SQLite veritabanı işlemleri
+- Migration oluşturma
+- Validation uygulama
+- HTTP metotlarını kullanma
+- JSON veri gönderme ve alma
+- Postman ile API testi hazırlama
+- React state yönetimi
+- TypeScript veri tipleri
+- React ile Laravel API bağlantısı
+- Git ve GitHub ile sürüm kontrolü
+
+konuları uygulamalı olarak çalışılmıştır.
 
 ## Sonuç
 
-Bu projede Laravel kullanılarak frontend içermeyen bir Todo List REST API geliştirilmiştir. CRUD işlemleri Postman üzerinden çalıştırılmış; olumlu ve olumsuz test senaryoları otomatik PASS/FAIL kontrolleriyle doğrulanmıştır.
+Bu projede Laravel ile geliştirilen REST API, React ve TypeScript ile hazırlanan kullanıcı arayüzüne bağlanmıştır. Kullanıcı arayüzünden yapılan görev ekleme, listeleme, tamamlama, geri alma ve silme işlemleri Laravel API üzerinden SQLite veritabanına aktarılmaktadır. Böylece frontend, backend, veritabanı ve API test süreçlerini bir arada içeren çalışan bir full-stack Todo List uygulaması oluşturulmuştur.
