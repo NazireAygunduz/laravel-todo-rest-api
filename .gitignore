@@ -26,3 +26,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /database/database.sqlite
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env
