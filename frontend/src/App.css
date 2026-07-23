@@ -1,32 +1,48 @@
+/* Google Fonts üzerinden Neucha yazı tipini projeye aktarır. */
 @import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
-.page{
+
+
+/* SAYFANIN GENEL YAPISI */
+
+/* sayfanın tamamını kaplayan ana alan */
+.page {
   min-height: 100vh;
-  padding:72px 20px 56px;
+  padding: 72px 20px 56px;
   background-color: rgb(238, 250, 249);
 }
 
-.todo-container{
-  width:100%;
+/* Todo uygulamasının ortada bulunan ana içerik kutusu */
+.todo-container {
+  width: 100%;
   max-width: 720px;
   margin: 0 auto;
 }
 
-.header{
-  margin-bottom:32px;
-}
-.header h1{
-  margin: 10px 0 10px;
-  font-size:48px;
-  line-height: 1.05;
-  color:#142751;
-}
-.header > p:last-child{
-  margin:0;
-  font-size: 18px;
-  color:#64748b;
+
+/*ÜST BAŞLIK ALANI*/
+
+/* sayfanın üst kısmındaki başlık bölümü */
+.header {
+  margin-bottom: 32px;
 }
 
-.header .subtitle{
+/* Ana Todo List başlığını düzenler */
+.header h1 {
+  margin: 10px 0 10px;
+  font-size: 48px;
+  line-height: 1.05;
+  color: #142751;
+}
+
+/*başlığın altında bulunan açıklama yazısını düzenler */
+.header > p:last-child {
+  margin: 0;
+  font-size: 18px;
+  color: #64748b;
+}
+
+/* başlığın üstündeki Laravel REST API Projesi yazısı */
+.header .subtitle {
   display: inline-block;
   margin: 0;
   padding: 7px 12px;
@@ -40,58 +56,83 @@
 }
 
 
-.todo-form{
-  display:flex;
+/* YENİ GÖREV EKLEME FORMU */
+
+/* yeni görev oluşturma formunun dış görünümü */
+.todo-form {
+  display: flex;
   flex-direction: column;
-  gap:10px;
-  padding:24px;
+  gap: 10px;
+  padding: 24px;
   margin-bottom: 28px;
   background-color: white;
   border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(15,23,42,0.08);
+  box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
 }
-.todo-form label{
-  margin-top:4px;
-  font-weight:600;
+
+/* form alanlarının üzerindeki Başlık ve Açıklama etiketleri */
+.todo-form label {
+  margin-top: 4px;
+  font-weight: 600;
   color: #334155;
 }
 
-.todo-form input, .todo-form textarea{
-  width:100%;
-  padding:13px 14px;
-  font:inherit;
-  border:1px solid #cbd5e1;
-  border-radius:9px;
-  outline:none;
+/* görev başlığı inputunu ve açıklama textarea alanı */
+.todo-form input,
+.todo-form textarea {
+  width: 100%;
+  padding: 13px 14px;
+  font: inherit;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
 }
+
+/* yeni görev ekleme butonunun normal görünümü */
 .todo-form button {
   margin-top: 8px;
   padding: 13px;
   font: inherit;
   font-weight: 700;
   color: white;
-  cursor:cell;
+  cursor: cell;
   background-color: #4253ec;
   border: none;
   border-radius: 9px;
 }
+
+/* görev ekle butonunun üzerine geldiğinde */
 .todo-form button:hover {
   background-color: #4338ca;
 }
+
+
+/* GÖREV LİSTESİ */
+
+/* görev kartlarının bulunduğu liste bölümü */
 .todo-list {
   margin-top: 34px;
 }
 
+/* görevler başlığı */
 .todo-list h2 {
   margin: 0 0 16px;
   font-size: 28px;
   color: #172033;
 }
 
+
+/* GÖREV KARTI*/
+
+/* Her görev için oluşturulan ana kart */
 .todo-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  /*uzun metinlerin kartı genişletmesini ve taşmasını engeller*/
+  min-width: 0;
+  overflow: hidden;
+
   gap: 24px;
   padding: 22px 24px;
   background-color: white;
@@ -100,23 +141,63 @@
   border-radius: 14px;
   box-shadow: 0 6px 24px rgba(15, 23, 42, 0.07);
 }
+
+/* görev kartındaki başlık metni */
 .todo-card h3 {
+  max-width: 100%;
   margin: 0 0 7px;
+
+  /*uzun veya boşluksuz yazılan görev başlıklarını alt satıra geçirir */
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+
   font-size: 19px;
   color: #172033;
 }
+
+/* görev kartındaki açıklama metni */
 .todo-card p {
+  max-width: 100%;
   margin: 0;
+
+  /*uzun açıklamaların kartın dışına taşmasını engeller ve alt satıra geçirir*/
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: pre-wrap;
+
   line-height: 1.5;
   color: #64748b;
 }
 
+/* ilk karttan sonraki görev kartlarının arasına boşluk bırakır */
+.todo-card + .todo-card {
+  margin-top: 14px;
+}
+
+/* kart içerisindeki görev başlığı ve açıklama bölümü */
+.todo-content {
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+
+/* GÖREV İŞLEM BUTONLARI */
+
+/* görev kartındaki bütün işlem butonlarını kapsayan alandır */
 .todo-actions {
   display: flex;
   flex-shrink: 0;
+
+  /*kartta yeterli alan kalmadığında alt satıra geçmesini sağlar */
+  flex-wrap: wrap;
+
   gap: 10px;
 }
 
+/* kart içerisindeki bütün işlem butonlarının ortak özellikleri */
 .todo-actions button {
   padding: 10px 14px;
   font: inherit;
@@ -127,83 +208,77 @@
   border-radius: 9px;
   transition: background-color 0.2s, transform 0.2s;
 }
+
+/* görev işlem butonlarının üzerine geldiğinde */
 .todo-actions button:hover {
   transform: translateY(-1px);
 }
 
+
+/* TAMAMLA VE GERİ AL BUTONU */
+
+/*normal görünümü */
 .complete-button {
   color: #166534;
   background-color: #dcfce7;
 }
 
+/*üzerine geldiğinde */
 .complete-button:hover {
   background-color: #bbf7d0;
 }
 
+
+/*  SİL BUTONU*/
+
+/* normal görünümü */
 .delete-button {
   color: #991b1b;
   background-color: #fee2e2;
 }
 
+/* üzerine geldiğinde */
 .delete-button:hover {
   background-color: #fecaca;
 }
-@media (max-width: 600px) {
-  .page {
-    padding: 36px 14px;
-  }
 
-  .header h1 {
-    font-size: 38px;
-  }
 
-  .header > p:last-child {
-    font-size: 16px;
-  }
+/* TAMAMLANMIŞ GÖREV GÖRÜNÜMÜ */
 
-  .todo-card {
-    align-items: stretch;
-    flex-direction: column;
-  }
-
-  .todo-actions {
-    width: 100%;
-  }
-
-  .todo-actions button {
-    flex: 1;
-  }
-}
-
+/* genel görünüm */
 .todo-card.completed {
   opacity: 0.7;
   border-left-color: #22c55e;
   background-color: #f8fafc;
 }
 
+/* üzeri çizili gösterir */
 .todo-card.completed h3,
 .todo-card.completed p {
   color: #64748b;
   text-decoration: line-through;
 }
 
-.todo-card + .todo-card {
-  margin-top: 14px;
-}
-.todo-content {
-  flex: 1;
-  min-width: 0;
-}
 
+/* GÖREV DÜZENLEME FORMU */
+
+/* düzenleme alanındaki başlık ve açıklama kutuları */
 .edit-form {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   gap: 10px;
 }
 
+/*  input ve textarea alanları */
 .edit-form input,
 .edit-form textarea {
   width: 100%;
+  max-width: 100%;
+
+  /*padding ve border değerlerinin input genişliğine eklenerek kartın taşmasını engeller.*/
+  box-sizing: border-box;
+
   padding: 11px 12px;
   font: inherit;
   border: 1px solid #cbd5e1;
@@ -211,39 +286,92 @@
   outline: none;
 }
 
+/* düzenleme açıklama alanının yüksekliğini ve büyütülmesini düzenler */
 .edit-form textarea {
   min-height: 80px;
   resize: vertical;
 }
 
+/* düzenleme inputuna tıklandığında kenarlık rengini değiştirir */
 .edit-form input:focus,
 .edit-form textarea:focus {
   border-color: #4f46e5;
 }
 
+
+/* DÜZENLE BUTONU*/
+
+/*  normal  */
 .edit-button {
   color: #3730a3;
   background-color: #e0e7ff;
 }
 
+/* üzerine geldiğinde  */
 .edit-button:hover {
   background-color: #c7d2fe;
 }
 
+
+/* KAYDET BUTONU */
+
+/* normal */
 .save-button {
   color: #166534;
   background-color: #dcfce7;
 }
 
+/* üzerine geldiğinde */
 .save-button:hover {
   background-color: #bbf7d0;
 }
 
+
+/*İPTAL BUTONU */
+
+/* normal */
 .cancel-button {
   color: #475569;
   background-color: #e2e8f0;
 }
 
+/* üzerine geldiğinde */
 .cancel-button:hover {
   background-color: #cbd5e1;
+}
+
+
+/* MOBİL UYUMLULUK - ekran genişliği 600 piksel veya daha küçük ise*/
+
+@media (max-width: 600px) {
+  /* sayfanın kenar boşluklarını küçültür */
+  .page {
+    padding: 36px 14px;
+  }
+
+  /*  ana başlığın boyutunu küçültür */
+  .header h1 {
+    font-size: 38px;
+  }
+
+  /*başlık altındaki açıklama yazısını küçültür */
+  .header > p:last-child {
+    font-size: 16px;
+  }
+
+  /* görev içeriğini ve butonları yan yana değil, alt alta*/
+  .todo-card {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  /* buton alanının kart genişliğini kaplamasını sağlar */
+  .todo-actions {
+    width: 100%;
+  }
+
+  /* görev butonlarının eşit genişlikte olması */
+  .todo-actions button {
+    flex: 1;
+  }
 }

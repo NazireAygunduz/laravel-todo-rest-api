@@ -225,6 +225,11 @@ async function handleToggle(todo: Todo) {
 }
 
 function handleEditStart(todo: Todo) {
+  if (todo.is_completed) {
+    alert('Tamamlanmış görevler düzenlenemez.')
+    return
+  }
+
   setEditingId(todo.id)
   setEditTitle(todo.title)
   setEditDescription(todo.description ?? '')
@@ -412,13 +417,15 @@ async function handleEditSave(todo: Todo) {
     </>
   ) : (
     <>
-      <button
-        type="button"
-        className="edit-button"
-        onClick={() => handleEditStart(todo)}
-      >
-        Düzenle
-      </button>
+  {!todo.is_completed && (
+  <button
+    type="button"
+    className="edit-button"
+    onClick={() => handleEditStart(todo)}
+  >
+    Düzenle
+  </button>
+  )}
 
       <button
         type="button"
