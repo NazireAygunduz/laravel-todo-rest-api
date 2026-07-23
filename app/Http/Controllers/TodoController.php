@@ -22,7 +22,7 @@ class TodoController extends Controller
     { //request: postmandan gelen tum veriler
         $validated =$request->validate([ //bu veriler dogru mu
             'title'=> ['required', 'string','max:255'], //zorunlu,metin tipli,en fazla 255 karakter olmali
-            'description'=> ['nullable','string'], //bos olabilir,metin olmalı
+            'description'=> ['required', 'string', 'max:1000'], //bos olabilir,metin olmalı
             'is_completed'=> ['sometimes','boolean'],//zorunlu değil, true/false dondurmeli
         ]);
         //validated icinde sadece dogrulanmıs olanlar vardir
@@ -50,7 +50,7 @@ class TodoController extends Controller
     {
         $validated = $request->validate([ //veri kontrol
             'title' => ['sometimes', 'required', 'string', 'max:255'],
-            'description'=> ['sometimes','nullable','string'],
+            'description'=> ['sometimes', 'required', 'string', 'max:1000'],
             'is_completed' => ['sometimes', 'boolean'],
         ]);
 

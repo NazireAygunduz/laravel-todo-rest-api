@@ -18,6 +18,10 @@ function App() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
+const [editingId, setEditingId] = useState<number | null>(null)
+const [editTitle, setEditTitle] = useState('')
+const [editDescription, setEditDescription] = useState('')
+
   const [todos, setTodos] = useState<Todo[]>([])
   useEffect(() => {
   async function fetchTodos() {
@@ -68,6 +72,11 @@ function App() {
     alert('Görev başlığı boş bırakılamaz.')
     return
   }
+  
+  if (description.trim() === '') {
+  alert('Görev açıklaması boş bırakılamaz.')
+  return
+}
 
   try {
     const response = await fetch(`${API_URL}/todos`, {
@@ -80,10 +89,7 @@ function App() {
 
       body: JSON.stringify({
         title: title.trim(),
-        description:
-          description.trim() === ''
-            ? null
-            : description.trim(),
+       description: description.trim(),
         is_completed: false,
       }),
     })
@@ -177,8 +183,6 @@ async function handleToggle(todo: Todo) {
           Accept: 'application/json',
         },
         body: JSON.stringify({
-          title: todo.title,
-          description: todo.description,
           is_completed: yeniDurum,
         }),
       },
@@ -220,6 +224,82 @@ async function handleToggle(todo: Todo) {
   }
 }
 
+function handleEditStart(todo: Todo) {
+  setEditingId(todo.id)
+  setEditTitle(todo.title)
+  setEditDescription(todo.description ?? '')
+}
+
+function handleEditCancel() {
+  setEditingId(null)
+  setEditTitle('')
+  setEditDescription('')
+}
+
+async function handleEditSave(todo: Todo) {
+  if (editTitle.trim() === '') {
+    alert('Görev başlığı boş bırakılamaz.')
+    return
+  }
+
+  if (editDescription.trim() === '') {
+    alert('Görev açıklaması boş bırakılamaz.')
+    return
+  }
+
+  try {
+    const response = await fetch(
+      `${API_URL}/todos/${todo.id}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          title: editTitle.trim(),
+          description: editDescription.trim(),
+        }),
+      },
+    )
+
+    if (!response.ok) {
+      const errorData = await response.json()
+
+      console.error(
+        'Görev düzenleme hatası:',
+        errorData,
+      )
+
+      throw new Error(
+        `Görev düzenlenemedi. Hata kodu: ${response.status}`,
+      )
+    }
+
+    const responseData = await response.json()
+
+    const updatedTodo: Todo =
+      responseData.data ??
+      responseData.todo ??
+      responseData
+
+    setTodos((currentTodos) =>
+      currentTodos.map((currentTodo) =>
+        currentTodo.id === todo.id
+          ? updatedTodo
+          : currentTodo,
+      ),
+    )
+
+    handleEditCancel()
+  } catch (error) {
+    console.error(error)
+    alert('Görev düzenlenirken hata oluştu.')
+  }
+}
+
+
+
   return (
     <main className="page">
       <section className="todo-container">
@@ -246,6 +326,7 @@ async function handleToggle(todo: Todo) {
           <input
             id="title"
             type="text"
+            required
             placeholder="Todo başlığı oluşturun."
             value={title}
             onChange={(event) =>
@@ -259,6 +340,7 @@ async function handleToggle(todo: Todo) {
 
           <textarea
             id="description"
+            required
             placeholder="Görev hakkında kısa bir açıklama yaz"
             value={description}
             onChange={(event) =>
@@ -281,37 +363,83 @@ async function handleToggle(todo: Todo) {
               }`}
               key={todo.id}
             >
-              <div>
-                <h3>{todo.title}</h3>
+    <div className="todo-content">
+    {editingId === todo.id ? (
+    <div className="edit-form">
+      <input
+        type="text"
+        value={editTitle}
+        onChange={(event) =>
+          setEditTitle(event.target.value)
+        }
+        placeholder="Görev başlığı"
+      />
 
-                {todo.description && (
-                  <p>{todo.description}</p>
-                )}
-              </div>
+      <textarea
+        value={editDescription}
+        onChange={(event) =>
+          setEditDescription(event.target.value)
+        }
+        placeholder="Görev açıklaması"
+      />
+    </div>
+  ) : (
+    <>
+      <h3>{todo.title}</h3>
+      <p>{todo.description}</p>
+    </>
+  )}
+</div>
 
               <div className="todo-actions">
-                <button
-                  type="button"
-                  className="complete-button"
-                  onClick={() =>
-                    handleToggle(todo)
-                  }
-                >
-                  {todo.is_completed
-                    ? 'Geri Al'
-                    : 'Tamamla'}
-                </button>
+  {editingId === todo.id ? (
+    <>
+      <button
+        type="button"
+        className="save-button"
+        onClick={() => handleEditSave(todo)}
+      >
+        Kaydet
+      </button>
 
-                <button
-                  type="button"
-                  className="delete-button"
-                  onClick={() =>
-                    handleDelete(todo.id)
-                  }
-                >
-                  Sil
-                </button>
-              </div>
+      <button
+        type="button"
+        className="cancel-button"
+        onClick={handleEditCancel}
+      >
+        İptal
+      </button>
+    </>
+  ) : (
+    <>
+      <button
+        type="button"
+        className="edit-button"
+        onClick={() => handleEditStart(todo)}
+      >
+        Düzenle
+      </button>
+
+      <button
+        type="button"
+        className="complete-button"
+        onClick={() => handleToggle(todo)}
+      >
+        {todo.is_completed
+          ? 'Geri Al'
+          : 'Tamamla'}
+      </button>
+
+      <button
+        type="button"
+        className="delete-button"
+        onClick={() => handleDelete(todo.id)}
+      >
+        Sil
+      </button>
+    </>
+  )}
+</div>
             </article>
           ))}
         </section>

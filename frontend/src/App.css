@@ -190,3 +190,60 @@
 .todo-card + .todo-card {
   margin-top: 14px;
 }
+.todo-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.edit-form input,
+.edit-form textarea {
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
+}
+
+.edit-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.edit-form input:focus,
+.edit-form textarea:focus {
+  border-color: #4f46e5;
+}
+
+.edit-button {
+  color: #3730a3;
+  background-color: #e0e7ff;
+}
+
+.edit-button:hover {
+  background-color: #c7d2fe;
+}
+
+.save-button {
+  color: #166534;
+  background-color: #dcfce7;
+}
+
+.save-button:hover {
+  background-color: #bbf7d0;
+}
+
+.cancel-button {
+  color: #475569;
+  background-color: #e2e8f0;
+}
+
+.cancel-button:hover {
+  background-color: #cbd5e1;
+}
