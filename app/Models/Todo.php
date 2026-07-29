@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Todo extends Model
 {
@@ -13,6 +14,11 @@ class Todo extends Model
         'description',
         'is_completed',
     ];
+
+    public function user(): BelongsTo{
+    //her todo kaydının bağlı olduğu kullanıcıyı temsil eder
+    return $this->belongsTo(User::class);
+    }
 
     //iscompleted degerini 1/0 olarak gormek istemiyoruz
     //bu yuzden booleana cast ediyoruz
