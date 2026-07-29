@@ -514,14 +514,21 @@
 
 /* hoş geldin yazısı */
 .user-area span {
-  flex: 1;
-  min-width: 160px;
+   flex: 1 1 0;
+  min-width: 0;
   font-weight: 700;
   color: #334155;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* kullanıcı alanındaki bütün butonlar */
 .user-area button {
+  flex-shrink: 0;
+  white-space: nowrap;
+
   padding: 9px 13px;
   font: inherit;
   font-size: 14px;
@@ -529,9 +536,7 @@
   cursor: pointer;
   border: none;
   border-radius: 8px;
-  transition:
-    background-color 0.2s,
-    transform 0.2s;
+  transition: background-color 0.2s, transform 0.2s;
 }
 
 /* hesap silme butonu */
@@ -682,6 +687,10 @@
   /* hoş geldin yazısı */
   .user-area span {
     min-width: 0;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   /* kullanıcı butonlarının tam genişlikte olması */

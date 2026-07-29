@@ -114,6 +114,7 @@ function AuthForm({onAuthenticated,}: AuthFormProps) {
               onChange={(event) =>
                 setName(event.target.value)
               }
+               maxLength={50}
               required
             />
           </>
@@ -130,6 +131,7 @@ function AuthForm({onAuthenticated,}: AuthFormProps) {
           onChange={(event) =>
             setEmail(event.target.value)
           }
+           maxLength={100}
           required
         />
 

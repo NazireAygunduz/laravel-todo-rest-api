@@ -18,14 +18,14 @@ public function register(Request $request): JsonResponse
             'name' => [
                 'required',
                 'string',
-                'max:255',
+                'max:50',
             ],
 
             'email' => [
                 'required',
                 'string',
                 'email',
-                'max:255',
+                'max:100',
                 'unique:users,email',
             ],
 
