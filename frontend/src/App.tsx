@@ -4,6 +4,18 @@ import {
   type FormEvent,
 } from 'react'
 
+import AuthForm, {
+  type User,
+} from './AuthForm'
+
+import DeleteAccountForm from './DeleteAccountForm'
+
+import {
+  apiRequest,
+  getToken,
+  removeToken,
+} from './api'
+
 import './App.css'
 
 type Todo = {
@@ -14,296 +26,471 @@ type Todo = {
 }
 
 function App() {
-  const API_URL = import.meta.env.VITE_API_URL
+  const [user, setUser] =
+    useState<User | null>(null)
+
+  const [isAuthLoading, setIsAuthLoading] =
+    useState(true)
+
+  const [showDeleteAccount,setShowDeleteAccount,] = useState(false)
+
   const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
+  const [description, setDescription] =
+    useState('')
 
-const [editingId, setEditingId] = useState<number | null>(null)
-const [editTitle, setEditTitle] = useState('')
-const [editDescription, setEditDescription] = useState('')
+  const [editingId, setEditingId] =
+    useState<number | null>(null)
 
-  const [todos, setTodos] = useState<Todo[]>([])
+  const [editTitle, setEditTitle] =
+    useState('')
+
+  const [
+    editDescription,
+    setEditDescription,
+  ] = useState('')
+
+  const [todos, setTodos] =
+    useState<Todo[]>([])
+
   useEffect(() => {
-  async function fetchTodos() {
-    try {
-      const response = await fetch(`${API_URL}/todos`, {
-        headers: {
-          Accept: 'application/json',
-        },
-      })
+    async function checkAuthentication() {
+      const token = getToken()
 
-      if (!response.ok) {
-        throw new Error(
-          `Görevler alınamadı. Hata kodu: ${response.status}`,
-        )
+      if (!token) {
+        setIsAuthLoading(false)
+        return
       }
 
-      const data = await response.json()
-      console.log('Laravel API cevabı:',data)
+      try {
+        const response =
+          await apiRequest('/user')
 
-      if (Array.isArray(data)) {
-      setTodos(data)
-      } else if (Array.isArray(data.data)) {
-      setTodos(data.data)
-      } else if (Array.isArray(data.todos)) {
-      setTodos(data.todos)
-      } else {
-      console.error('API görev listesi döndürmedi:', data)
+        if (!response.ok) {
+          removeToken()
+          setUser(null)
+          return
+        }
+
+        const data = await response.json()
+
+        setUser(data.user)
+      } catch (error) {
+        console.error(
+          'Oturum kontrol edilirken hata oluştu:',
+          error,
+        )
+
+        removeToken()
+        setUser(null)
+      } finally {
+        setIsAuthLoading(false)
+      }
+    }
+
+    checkAuthentication()
+  }, [])
+
+  useEffect(() => {
+    if (!user) {
       setTodos([])
-}
-
-    } catch (error) {
-      console.error(
-        'Görevler alınırken hata oluştu:',
-        error,
-      )
-    }
-  }
-
-  fetchTodos()
-}, [API_URL])
-
-  async function handleSubmit(
-  event: FormEvent<HTMLFormElement>,
-) {
-  event.preventDefault()
-
-  if (title.trim() === '') {
-    alert('Görev başlığı boş bırakılamaz.')
-    return
-  }
-  
-  if (description.trim() === '') {
-  alert('Görev açıklaması boş bırakılamaz.')
-  return
-}
-
-  try {
-    const response = await fetch(`${API_URL}/todos`, {
-      method: 'POST',
-
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-
-      body: JSON.stringify({
-        title: title.trim(),
-       description: description.trim(),
-        is_completed: false,
-      }),
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json()
-
-      console.error(
-        'Laravel görev oluşturma hatası:',
-        errorData,
-      )
-
-      throw new Error(
-        `Görev oluşturulamadı. Hata kodu: ${response.status}`,
-      )
-    }
-
-    const responseData = await response.json()
-
-    console.log(
-      'Oluşturulan görev cevabı:',
-      responseData,
-    )
-
-    const createdTodo: Todo =
-      responseData.todo ??
-      responseData.data ??
-      responseData
-
-    setTodos((currentTodos) => [
-      createdTodo,
-      ...currentTodos,
-    ])
-
-    setTitle('')
-    setDescription('')
-  } catch (error) {
-    console.error(
-      'Görev eklenirken hata oluştu:',
-      error,
-    )
-
-    alert('Görev eklenemedi.')
-  }
-}
-
-
- async function handleDelete(id: number) {
-  const onay = window.confirm(
-    'Bu görevi silmek istediğinize emin misiniz?',
-  )
-
-  if (!onay) {
-    return
-  }
-
-  try {
-    const response = await fetch(
-      `${API_URL}/todos/${id}`,
-      {
-        method: 'DELETE',
-        headers: {
-          Accept: 'application/json',
-        },
-      },
-    )
-
-    if (!response.ok) {
-      throw new Error('Görev silinemedi.')
-    }
-
-    setTodos((currentTodos) =>
-      currentTodos.filter((todo) => todo.id !== id),
-    )
-  } catch (error) {
-    console.error(error)
-    alert('Görev silinirken hata oluştu.')
-  }
-}
-
-async function handleToggle(todo: Todo) {
-  const yeniDurum = !todo.is_completed
-
-  try {
-    const response = await fetch(
-      `${API_URL}/todos/${todo.id}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          is_completed: yeniDurum,
-        }),
-      },
-    )
-
-    if (!response.ok) {
-      const hataMetni = await response.text()
-
-      console.error(
-        'Laravel güncelleme hatası:',
-        response.status,
-        hataMetni,
-      )
-
-      alert(
-        `Görev güncellenemedi. Hata kodu: ${response.status}`,
-      )
-
       return
     }
 
-    setTodos((currentTodos) =>
-      currentTodos.map((currentTodo) =>
-        currentTodo.id === todo.id
-          ? {
-              ...currentTodo,
-              is_completed: yeniDurum,
-            }
-          : currentTodo,
-      ),
-    )
-  } catch (error) {
-    console.error(
-      'Görev güncellenirken bağlantı hatası:',
-      error,
-    )
+    async function fetchTodos() {
+      try {
+        const response =
+          await apiRequest('/todos')
 
-    alert('Laravel API bağlantısında hata oluştu.')
-  }
-}
+        if (response.status === 401) {
+          removeToken()
+          setUser(null)
+          return
+        }
 
-function handleEditStart(todo: Todo) {
-  if (todo.is_completed) {
-    alert('Tamamlanmış görevler düzenlenemez.')
-    return
-  }
+        if (!response.ok) {
+          throw new Error(
+            `Görevler alınamadı. Hata kodu: ${response.status}`,
+          )
+        }
 
-  setEditingId(todo.id)
-  setEditTitle(todo.title)
-  setEditDescription(todo.description ?? '')
-}
+        const data = await response.json()
 
-function handleEditCancel() {
-  setEditingId(null)
-  setEditTitle('')
-  setEditDescription('')
-}
+        console.log(
+          'Laravel API cevabı:',
+          data,
+        )
 
-async function handleEditSave(todo: Todo) {
-  if (editTitle.trim() === '') {
-    alert('Görev başlığı boş bırakılamaz.')
-    return
-  }
+        if (Array.isArray(data)) {
+          setTodos(data)
+        } else if (Array.isArray(data.data)) {
+          setTodos(data.data)
+        } else if (
+          Array.isArray(data.todos)
+        ) {
+          setTodos(data.todos)
+        } else {
+          console.error(
+            'API görev listesi döndürmedi:',
+            data,
+          )
 
-  if (editDescription.trim() === '') {
-    alert('Görev açıklaması boş bırakılamaz.')
-    return
-  }
-
-  try {
-    const response = await fetch(
-      `${API_URL}/todos/${todo.id}`,
-      {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({
-          title: editTitle.trim(),
-          description: editDescription.trim(),
-        }),
-      },
-    )
-
-    if (!response.ok) {
-      const errorData = await response.json()
-
-      console.error(
-        'Görev düzenleme hatası:',
-        errorData,
-      )
-
-      throw new Error(
-        `Görev düzenlenemedi. Hata kodu: ${response.status}`,
-      )
+          setTodos([])
+        }
+      } catch (error) {
+        console.error(
+          'Görevler alınırken hata oluştu:',
+          error,
+        )
+      }
     }
 
-    const responseData = await response.json()
+    fetchTodos()
+  }, [user])
 
-    const updatedTodo: Todo =
-      responseData.data ??
-      responseData.todo ??
-      responseData
+  async function handleSubmit(
+    event: FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault()
 
-    setTodos((currentTodos) =>
-      currentTodos.map((currentTodo) =>
-        currentTodo.id === todo.id
-          ? updatedTodo
-          : currentTodo,
-      ),
+    if (title.trim() === '') {
+      alert(
+        'Görev başlığı boş bırakılamaz.',
+      )
+      return
+    }
+
+    if (description.trim() === '') {
+      alert(
+        'Görev açıklaması boş bırakılamaz.',
+      )
+      return
+    }
+
+    try {
+      const response = await apiRequest(
+        '/todos',
+        {
+          method: 'POST',
+
+          body: JSON.stringify({
+            title: title.trim(),
+            description:
+              description.trim(),
+            is_completed: false,
+          }),
+        },
+      )
+
+      if (response.status === 401) {
+        removeToken()
+        setUser(null)
+        return
+      }
+
+      if (!response.ok) {
+        const errorData =
+          await response.json()
+
+        console.error(
+          'Laravel görev oluşturma hatası:',
+          errorData,
+        )
+
+        throw new Error(
+          `Görev oluşturulamadı. Hata kodu: ${response.status}`,
+        )
+      }
+
+      const responseData =
+        await response.json()
+
+      console.log(
+        'Oluşturulan görev cevabı:',
+        responseData,
+      )
+
+      const createdTodo: Todo =
+        responseData.todo ??
+        responseData.data ??
+        responseData
+
+      setTodos((currentTodos) => [
+        createdTodo,
+        ...currentTodos,
+      ])
+
+      setTitle('')
+      setDescription('')
+    } catch (error) {
+      console.error(
+        'Görev eklenirken hata oluştu:',
+        error,
+      )
+
+      alert('Görev eklenemedi.')
+    }
+  }
+
+  async function handleDelete(id: number) {
+    const onay = window.confirm(
+      'Bu görevi silmek istediğinize emin misiniz?',
     )
 
-    handleEditCancel()
-  } catch (error) {
-    console.error(error)
-    alert('Görev düzenlenirken hata oluştu.')
+    if (!onay) {
+      return
+    }
+
+    try {
+      const response = await apiRequest(
+        `/todos/${id}`,
+        {
+          method: 'DELETE',
+        },
+      )
+
+      if (response.status === 401) {
+        removeToken()
+        setUser(null)
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          'Görev silinemedi.',
+        )
+      }
+
+      setTodos((currentTodos) =>
+        currentTodos.filter(
+          (todo) => todo.id !== id,
+        ),
+      )
+    } catch (error) {
+      console.error(error)
+
+      alert(
+        'Görev silinirken hata oluştu.',
+      )
+    }
   }
+
+  async function handleToggle(todo: Todo) {
+    const yeniDurum =
+      !todo.is_completed
+
+    try {
+      const response = await apiRequest(
+        `/todos/${todo.id}`,
+        {
+          method: 'PATCH',
+
+          body: JSON.stringify({
+            is_completed: yeniDurum,
+          }),
+        },
+      )
+
+      if (response.status === 401) {
+        removeToken()
+        setUser(null)
+        return
+      }
+
+      if (!response.ok) {
+        const hataMetni =
+          await response.text()
+
+        console.error(
+          'Laravel güncelleme hatası:',
+          response.status,
+          hataMetni,
+        )
+
+        alert(
+          `Görev güncellenemedi. Hata kodu: ${response.status}`,
+        )
+
+        return
+      }
+
+      setTodos((currentTodos) =>
+        currentTodos.map(
+          (currentTodo) =>
+            currentTodo.id === todo.id
+              ? {
+                  ...currentTodo,
+                  is_completed:
+                    yeniDurum,
+                }
+              : currentTodo,
+        ),
+      )
+    } catch (error) {
+      console.error(
+        'Görev güncellenirken bağlantı hatası:',
+        error,
+      )
+
+      alert(
+        'Laravel API bağlantısında hata oluştu.',
+      )
+    }
+  }
+
+  function handleEditStart(todo: Todo) {
+    if (todo.is_completed) {
+      alert(
+        'Tamamlanmış görevler düzenlenemez.',
+      )
+      return
+    }
+
+    setEditingId(todo.id)
+    setEditTitle(todo.title)
+
+    setEditDescription(
+      todo.description ?? '',
+    )
+  }
+
+  function handleEditCancel() {
+    setEditingId(null)
+    setEditTitle('')
+    setEditDescription('')
+  }
+
+  async function handleEditSave(
+    todo: Todo,
+  ) {
+    if (editTitle.trim() === '') {
+      alert(
+        'Görev başlığı boş bırakılamaz.',
+      )
+      return
+    }
+
+    if (
+      editDescription.trim() === ''
+    ) {
+      alert(
+        'Görev açıklaması boş bırakılamaz.',
+      )
+      return
+    }
+
+    try {
+      const response = await apiRequest(
+        `/todos/${todo.id}`,
+        {
+          method: 'PATCH',
+
+          body: JSON.stringify({
+            title: editTitle.trim(),
+            description:
+              editDescription.trim(),
+          }),
+        },
+      )
+
+      if (response.status === 401) {
+        removeToken()
+        setUser(null)
+        return
+      }
+
+      if (!response.ok) {
+        const errorData =
+          await response.json()
+
+        console.error(
+          'Görev düzenleme hatası:',
+          errorData,
+        )
+
+        throw new Error(
+          `Görev düzenlenemedi. Hata kodu: ${response.status}`,
+        )
+      }
+
+      const responseData =
+        await response.json()
+
+      const updatedTodo: Todo =
+        responseData.data ??
+        responseData.todo ??
+        responseData
+
+      setTodos((currentTodos) =>
+        currentTodos.map(
+          (currentTodo) =>
+            currentTodo.id === todo.id
+              ? updatedTodo
+              : currentTodo,
+        ),
+      )
+
+      handleEditCancel()
+    } catch (error) {
+      console.error(error)
+
+      alert(
+        'Görev düzenlenirken hata oluştu.',
+      )
+    }
+  }
+
+  function handleAuthenticated(
+    authenticatedUser: User,
+  ) {
+    setUser(authenticatedUser)
+  }
+
+  function handleAccountDeleted() {
+  setShowDeleteAccount(false)
+  setUser(null)
+  setTodos([])
+  handleEditCancel()
 }
+  async function handleLogout() {
+    try {
+      await apiRequest('/logout', {
+        method: 'POST',
+      })
+    } catch (error) {
+      console.error(
+        'Çıkış isteği sırasında hata oluştu:',
+        error,
+      )
+    } finally {
+  removeToken()
+  setShowDeleteAccount(false)
+  setUser(null)
+  setTodos([])
+  handleEditCancel()
+}
+  }
 
+  if (isAuthLoading) {
+    return (
+      <main className="page">
+        <p>
+          Oturum kontrol ediliyor...
+        </p>
+      </main>
+    )
+  }
 
+  if (!user) {
+    return (
+      <main className="page">
+        <AuthForm
+          onAuthenticated={
+            handleAuthenticated
+          }
+        />
+      </main>
+    )
+  }
 
   return (
     <main className="page">
@@ -316,14 +503,46 @@ async function handleEditSave(todo: Todo) {
           <h1>Todo List</h1>
 
           <p>
-            Görevlerini oluştur, takip et ve tamamla.
+            Görevlerini oluştur, takip et
+            ve tamamla.
           </p>
+
+          <div className="user-area">
+  <span>
+    Hoş geldin, {user.name}
+  </span>
+
+  <button
+    type="button"
+    onClick={() =>
+      setShowDeleteAccount(true)
+    }
+  >
+    Hesabımı Sil
+  </button>
+
+  <button
+    type="button"
+    onClick={handleLogout}
+  >
+    Çıkış Yap
+  </button>
+</div>
         </header>
 
-        <form
-          className="todo-form"
-          onSubmit={handleSubmit}
-        >
+{showDeleteAccount && (
+  <DeleteAccountForm
+    onDeleted={handleAccountDeleted}
+    onCancel={() =>
+      setShowDeleteAccount(false)
+    }
+  />
+)}
+
+<form
+  className="todo-form"
+  onSubmit={handleSubmit}
+>
           <label htmlFor="title">
             Görev başlığı
           </label>
@@ -335,7 +554,9 @@ async function handleEditSave(todo: Todo) {
             placeholder="Todo başlığı oluşturun."
             value={title}
             onChange={(event) =>
-              setTitle(event.target.value)
+              setTitle(
+                event.target.value,
+              )
             }
           />
 
@@ -349,7 +570,9 @@ async function handleEditSave(todo: Todo) {
             placeholder="Görev hakkında kısa bir açıklama yaz"
             value={description}
             onChange={(event) =>
-              setDescription(event.target.value)
+              setDescription(
+                event.target.value,
+              )
             }
           />
 
@@ -364,89 +587,128 @@ async function handleEditSave(todo: Todo) {
           {todos.map((todo) => (
             <article
               className={`todo-card ${
-                todo.is_completed ? 'completed' : ''
+                todo.is_completed
+                  ? 'completed'
+                  : ''
               }`}
               key={todo.id}
             >
-    <div className="todo-content">
-    {editingId === todo.id ? (
-    <div className="edit-form">
-      <input
-        type="text"
-        value={editTitle}
-        onChange={(event) =>
-          setEditTitle(event.target.value)
-        }
-        placeholder="Görev başlığı"
-      />
+              <div className="todo-content">
+                {editingId ===
+                todo.id ? (
+                  <div className="edit-form">
+                    <input
+                      type="text"
+                      value={editTitle}
+                      onChange={(
+                        event,
+                      ) =>
+                        setEditTitle(
+                          event.target
+                            .value,
+                        )
+                      }
+                      placeholder="Görev başlığı"
+                    />
 
-      <textarea
-        value={editDescription}
-        onChange={(event) =>
-          setEditDescription(event.target.value)
-        }
-        placeholder="Görev açıklaması"
-      />
-    </div>
-  ) : (
-    <>
-      <h3>{todo.title}</h3>
-      <p>{todo.description}</p>
-    </>
-  )}
-</div>
+                    <textarea
+                      value={
+                        editDescription
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        setEditDescription(
+                          event.target
+                            .value,
+                        )
+                      }
+                      placeholder="Görev açıklaması"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <h3>
+                      {todo.title}
+                    </h3>
+
+                    <p>
+                      {todo.description}
+                    </p>
+                  </>
+                )}
+              </div>
 
               <div className="todo-actions">
-  {editingId === todo.id ? (
-    <>
-      <button
-        type="button"
-        className="save-button"
-        onClick={() => handleEditSave(todo)}
-      >
-        Kaydet
-      </button>
+                {editingId ===
+                todo.id ? (
+                  <>
+                    <button
+                      type="button"
+                      className="save-button"
+                      onClick={() =>
+                        handleEditSave(
+                          todo,
+                        )
+                      }
+                    >
+                      Kaydet
+                    </button>
 
-      <button
-        type="button"
-        className="cancel-button"
-        onClick={handleEditCancel}
-      >
-        İptal
-      </button>
-    </>
-  ) : (
-    <>
-  {!todo.is_completed && (
-  <button
-    type="button"
-    className="edit-button"
-    onClick={() => handleEditStart(todo)}
-  >
-    Düzenle
-  </button>
-  )}
+                    <button
+                      type="button"
+                      className="cancel-button"
+                      onClick={
+                        handleEditCancel
+                      }
+                    >
+                      İptal
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    {!todo.is_completed && (
+                      <button
+                        type="button"
+                        className="edit-button"
+                        onClick={() =>
+                          handleEditStart(
+                            todo,
+                          )
+                        }
+                      >
+                        Düzenle
+                      </button>
+                    )}
 
-      <button
-        type="button"
-        className="complete-button"
-        onClick={() => handleToggle(todo)}
-      >
-        {todo.is_completed
-          ? 'Geri Al'
-          : 'Tamamla'}
-      </button>
+                    <button
+                      type="button"
+                      className="complete-button"
+                      onClick={() =>
+                        handleToggle(
+                          todo,
+                        )
+                      }
+                    >
+                      {todo.is_completed
+                        ? 'Geri Al'
+                        : 'Tamamla'}
+                    </button>
 
-      <button
-        type="button"
-        className="delete-button"
-        onClick={() => handleDelete(todo.id)}
-      >
-        Sil
-      </button>
-    </>
-  )}
-</div>
+                    <button
+                      type="button"
+                      className="delete-button"
+                      onClick={() =>
+                        handleDelete(
+                          todo.id,
+                        )
+                      }
+                    >
+                      Sil
+                    </button>
+                  </>
+                )}
+              </div>
             </article>
           ))}
         </section>

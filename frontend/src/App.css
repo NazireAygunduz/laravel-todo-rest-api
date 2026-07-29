@@ -35,7 +35,7 @@
 }
 
 /*başlığın altında bulunan açıklama yazısını düzenler */
-.header > p:last-child {
+.header > p:not(.subtitle) {
   margin: 0;
   font-size: 18px;
   color: #64748b;
@@ -355,9 +355,9 @@
   }
 
   /*başlık altındaki açıklama yazısını küçültür */
-  .header > p:last-child {
-    font-size: 16px;
-  }
+  .header > p:not(.subtitle) {
+  font-size: 16px;
+}
 
   /* görev içeriğini ve butonları yan yana değil, alt alta*/
   .todo-card {
@@ -373,5 +373,334 @@
   /* görev butonlarının eşit genişlikte olması */
   .todo-actions button {
     flex: 1;
+  }
+}
+
+/* AUTHENTICATION - GİRİŞ VE KAYIT EKRANI */
+
+/* giriş ve kayıt formunun ana kartı */
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  margin: 50px auto 0;
+  padding: 32px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.1);
+}
+
+/* giriş veya kayıt başlığı */
+.auth-card h1 {
+  margin: 0 0 10px;
+  font-size: 36px;
+  color: #142751;
+}
+
+/* başlığın altındaki açıklama */
+.auth-card > p {
+  margin: 0 0 24px;
+  line-height: 1.5;
+  color: #64748b;
+}
+
+/* giriş ve kayıt formu */
+.auth-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* inputların üzerindeki etiketler */
+.auth-card label {
+  margin-top: 5px;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* e-posta, ad ve şifre alanları */
+.auth-card input {
+  width: 100%;
+  padding: 13px 14px;
+  font: inherit;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+/* input seçildiğinde */
+.auth-card input:focus {
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+}
+
+/* giriş yap ve kayıt ol butonu */
+.auth-card form > button {
+  margin-top: 12px;
+  padding: 13px;
+  font: inherit;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  background-color: #4f46e5;
+  border: none;
+  border-radius: 9px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+/* giriş ve kayıt butonunun üzerine gelindiğinde */
+.auth-card form > button:hover:not(:disabled) {
+  background-color: #4338ca;
+  transform: translateY(-1px);
+}
+
+/* işlem yapılırken butonun görünümü */
+.auth-card button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* giriş ile kayıt arasında geçiş yapan buton */
+.auth-switch-button {
+  width: 100%;
+  margin-top: 18px;
+  padding: 10px;
+  font: inherit;
+  font-weight: 700;
+  color: #4f46e5;
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  border-radius: 9px;
+}
+
+/* giriş/kayıt değiştirme butonunun üzerine gelindiğinde */
+.auth-switch-button:hover {
+  background-color: #eef2ff;
+}
+
+/* giriş, kayıt ve hesap silme hata mesajı */
+.auth-error {
+  margin: 6px 0 0 !important;
+  padding: 11px 13px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #991b1b !important;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+}
+
+
+/* KULLANICI VE ÇIKIŞ ALANI */
+
+/* kullanıcı adı ve hesap işlem butonlarının bulunduğu alan */
+.user-area {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+  padding: 14px 16px;
+  background-color: rgba(255, 255, 255, 0.75);
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+}
+
+/* hoş geldin yazısı */
+.user-area span {
+  flex: 1;
+  min-width: 160px;
+  font-weight: 700;
+  color: #334155;
+}
+
+/* kullanıcı alanındaki bütün butonlar */
+.user-area button {
+  padding: 9px 13px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+/* hesap silme butonu */
+.user-area button:first-of-type {
+  color: #991b1b;
+  background-color: #fee2e2;
+}
+
+/* hesap silme butonunun üzerine gelindiğinde */
+.user-area button:first-of-type:hover {
+  background-color: #fecaca;
+  transform: translateY(-1px);
+}
+
+/* çıkış yap butonu */
+.user-area button:last-of-type {
+  color: #3730a3;
+  background-color: #e0e7ff;
+}
+
+/* çıkış yap butonunun üzerine gelindiğinde */
+.user-area button:last-of-type:hover {
+  background-color: #c7d2fe;
+  transform: translateY(-1px);
+}
+
+
+/* HESAP SİLME FORMU */
+
+/* hesap silme formunun ana kartı */
+.delete-account-card {
+  margin-bottom: 28px;
+  padding: 24px;
+  background-color: #fff7f7;
+  border: 1px solid #fecaca;
+  border-left: 5px solid #dc2626;
+  border-radius: 14px;
+  box-shadow: 0 6px 24px rgba(127, 29, 29, 0.08);
+}
+
+/* hesap silme başlığı */
+.delete-account-card h2 {
+  margin: 0 0 8px;
+  color: #991b1b;
+}
+
+/* hesap silme açıklaması */
+.delete-account-card > p {
+  margin: 0 0 18px;
+  line-height: 1.5;
+  color: #7f1d1d;
+}
+
+/* hesap silme formu */
+.delete-account-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* mevcut şifre etiketi */
+.delete-account-card label {
+  font-weight: 700;
+  color: #334155;
+}
+
+/* mevcut şifre inputu */
+.delete-account-card input {
+  width: 100%;
+  padding: 12px 13px;
+  font: inherit;
+  border: 1px solid #fca5a5;
+  border-radius: 9px;
+  outline: none;
+}
+
+/* mevcut şifre inputuna tıklandığında */
+.delete-account-card input:focus {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* hesabı sil ve iptal butonlarının alanı */
+.delete-account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* hesap silme alanındaki butonlar */
+.delete-account-actions button {
+  padding: 11px 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: 9px;
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
+}
+
+/* butonların üzerine gelindiğinde */
+.delete-account-actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* hesabı kalıcı olarak sil butonu */
+.delete-account-confirm-button {
+  color: white;
+  background-color: #dc2626;
+}
+
+/* hesabı kalıcı olarak sil butonunun üzerine gelindiğinde */
+.delete-account-confirm-button:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+/* işlem devam ederken butonlar */
+.delete-account-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+/* AUTHENTICATION MOBİL UYUMLULUK */
+
+@media (max-width: 600px) {
+  /* giriş ve kayıt kartı */
+  .auth-card {
+    margin-top: 10px;
+    padding: 24px 18px;
+    border-radius: 14px;
+  }
+
+  /* giriş ve kayıt başlığı */
+  .auth-card h1 {
+    font-size: 31px;
+  }
+
+  /* kullanıcı alanındaki elemanları alt alta getirir */
+  .user-area {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  /* hoş geldin yazısı */
+  .user-area span {
+    min-width: 0;
+  }
+
+  /* kullanıcı butonlarının tam genişlikte olması */
+  .user-area button {
+    width: 100%;
+  }
+
+  /* hesap silme kartının boşluklarını küçültür */
+  .delete-account-card {
+    padding: 20px 16px;
+  }
+
+  /* hesap silme işlem butonlarını alt alta getirir */
+  .delete-account-actions {
+    flex-direction: column;
+  }
+
+  /* hesap silme butonlarının tam genişlikte olması */
+  .delete-account-actions button {
+    width: 100%;
   }
 }
