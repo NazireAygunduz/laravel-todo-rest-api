@@ -713,3 +713,368 @@
     width: 100%;
   }
 }
+
+/* Görev kartındaki liste ve son tarih bilgilerini düzenler */
+.todo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 12px;
+  font-size: 0.95rem;
+}
+
+.todo-meta span {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+}
+
+/* Görev oluşturma ve düzenleme ekranındaki select alanlarını
+   diğer inputlarla aynı görünüme yaklaştırır */
+.todo-form select,
+.edit-form select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background: white;
+  font: inherit;
+  box-sizing: border-box;
+}
+
+/* Düzenleme ekranındaki alanlar arasında boşluk bırakır */
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* =========================
+   LİSTE VE GÖREV EKLEME AÇILIR KARTLARI
+   ========================= */
+
+/* Liste Ekle ve Görev Ekle alanlarının kapalı durumdaki küçük kartı */
+.collapsible-card {
+  margin-bottom: 14px;
+  overflow: hidden;
+  background-color: white;
+  border: 1px solid #dbeafe;
+  border-radius: 14px;
+  box-shadow: 0 5px 18px rgba(15, 23, 42, 0.05);
+}
+
+/* Açılır kartın tıklanabilen başlık satırı */
+.collapsible-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 16px 20px;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 700;
+  color: #172033;
+  text-align: left;
+  cursor: pointer;
+  background-color: white;
+  border: none;
+}
+
+/* Açılır kart başlığının üzerine gelindiğinde */
+.collapsible-card-header:hover {
+  background-color: #f8fafc;
+}
+
+/* Açılır kartın sağındaki ok */
+.collapsible-arrow {
+  flex-shrink: 0;
+  margin-left: 14px;
+  font-size: 13px;
+  color: #4f46e5;
+  transition: transform 0.2s;
+}
+
+/* Kart açıkken oku ters çevirir */
+.collapsible-card.open .collapsible-arrow {
+  transform: rotate(180deg);
+}
+
+/* Kart açıldığında görünen içerik */
+.collapsible-card-body {
+  padding: 0 20px 20px;
+  border-top: 1px solid #eef2f7;
+}
+
+/* Açılır kart içindeki görev formunun eski büyük dış kart görünümünü kaldırır */
+.collapsible-card .todo-form {
+  margin: 0;
+  padding: 20px 0 0;
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* Açılır kart içindeki liste oluşturma formu */
+.collapsible-card .list-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 0;
+  padding-top: 20px;
+}
+
+/* Liste oluşturma alanındaki input grubu */
+.list-form-field {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 8px;
+}
+
+/* Liste oluşturma inputları */
+.list-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 13px;
+  box-sizing: border-box;
+  font: inherit;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  outline: none;
+}
+
+/* Liste oluştur butonu */
+.list-form > button {
+  min-height: 46px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: 9px;
+}
+
+
+/* =========================
+   LİSTELERİ DÜZENLEME
+   ========================= */
+
+/* Liste düzenleme bölümü sadece Liste Ekle kartı açıldığında görünür */
+.list-manager {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Listeleri Düzenle başlığı */
+.list-manager h3 {
+  margin: 0 0 12px;
+  color: #172033;
+}
+
+/* Düzenlenecek her listenin satırı */
+.list-manager-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 0;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* Liste adı ve açıklamasının bulunduğu alan */
+.list-manager-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* Uzun liste adı burada da ekranı bozmaz */
+.list-manager-info strong,
+.list-manager-info span {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Liste açıklaması */
+.list-manager-info span {
+  font-size: 14px;
+  color: #64748b;
+}
+
+/* Liste düzenle ve sil butonları */
+.list-manager-actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+/* Liste düzenleme alanındaki butonların ortak özellikleri */
+.list-manager-actions button {
+  padding: 8px 11px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+}
+
+/* Liste düzenlenirken görünen input alanı */
+.list-manager-edit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  gap: 8px;
+}
+
+/* Liste düzenleme inputları */
+.list-manager-edit input {
+  width: 100%;
+  min-width: 0;
+  padding: 9px 10px;
+  box-sizing: border-box;
+  font: inherit;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
+}
+
+
+/* =========================
+   LİSTELERİM KISA YOLLARI
+   ========================= */
+
+/* Listelerim burada sadece görevleri filtrelemek için kullanılır */
+.lists-shortcuts {
+  margin-top: 28px;
+  margin-bottom: 30px;
+}
+
+/* Listelerim başlığı */
+.lists-shortcuts h2 {
+  margin: 0 0 13px;
+  font-size: 24px;
+  color: #172033;
+}
+
+/* Tüm Görevler, Ev, İş, Okul gibi liste butonlarını yan yana dizer */
+.list-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Her liste küçük ve sade bir buton olarak görünür */
+.list-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 210px;
+  min-width: 90px;
+  min-height: 38px;
+  gap: 8px;
+  padding: 8px 12px;
+  box-sizing: border-box;
+  font: inherit;
+  font-weight: 700;
+  color: #172033;
+  cursor: pointer;
+  background-color: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+}
+
+/* Seçili liste */
+.list-chip.active {
+  color: #3730a3;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.10);
+}
+
+/* Uzun liste adını belirli bir genişlikten sonra üç nokta ile keser */
+.list-chip-label {
+  min-width: 0;
+  max-width: 155px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Listenin kaç görevi olduğunu gösterir */
+.list-chip-count {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  background-color: #f1f5f9;
+  border-radius: 999px;
+}
+
+
+/* =========================
+   GÖREVLERİM
+   ========================= */
+
+/* Görevlerim ile Listelerim arasındaki boşluğu düzenler */
+.lists-shortcuts + .todo-list {
+  margin-top: 0;
+}
+
+
+/* =========================
+   MOBİL UYUMLULUK
+   ========================= */
+
+@media (max-width: 760px) {
+  /* Liste oluşturma formunu mobilde alt alta getirir */
+  .collapsible-card .list-form {
+    grid-template-columns: 1fr;
+  }
+
+  /* Liste düzenleme alanını mobilde alt alta getirir */
+  .list-manager-edit {
+    grid-template-columns: 1fr;
+  }
+
+  /* Liste düzenleme satırını mobilde alt alta getirir */
+  .list-manager-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  /* Liste düzenle ve sil butonları mobilde tam alanı paylaşır */
+  .list-manager-actions {
+    width: 100%;
+  }
+
+  .list-manager-actions button {
+    flex: 1;
+  }
+
+  /* Mobilde liste butonları ekranın yarısından fazla büyümez */
+  .list-chip {
+    max-width: calc(50% - 5px);
+  }
+
+  .list-chip-label {
+    max-width: 120px;
+  }
+}

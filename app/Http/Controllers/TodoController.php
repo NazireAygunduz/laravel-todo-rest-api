@@ -25,7 +25,7 @@ class TodoController extends Controller
             'title' => ['required','string','max:255',],
             'description' => [ 'required', 'string', 'max:1000',],
             'is_completed' => ['sometimes','boolean', ],
-            'list_id'=> ['nullable','integer','exists:task_lists,id'],
+            'list_id'=> ['sometimes','nullable','integer','exists:task_lists,id'],
             'due_date' =>['nullable','date'],
         ]);
 
