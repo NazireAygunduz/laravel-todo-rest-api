@@ -29,4 +29,9 @@ class User extends Authenticatable
     //kullanıcının birden fazla todo kaydı olabilir
     return $this->hasMany(Todo::class);
     }
+
+    public function taskLists(): HasMany{
+    return $this->hasMany(TaskList::class);
+    //kullanıcının birden fazla taslist kaydı olabilir
+    }
 }   

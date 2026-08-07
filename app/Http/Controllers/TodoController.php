@@ -25,7 +25,13 @@ class TodoController extends Controller
             'title' => ['required','string','max:255',],
             'description' => [ 'required', 'string', 'max:1000',],
             'is_completed' => ['sometimes','boolean', ],
+            'list_id'=> ['nullable','integer','exists:task_lists,id'],
+            'due_date' =>['nullable','date'],
         ]);
+
+        if(!empty($validated['list_id'])){
+            $request->user()->taskLists()->findOrFail($validated['list_id']);
+        }
 
         $todo = $request->user() ->todos() ->create($validated);
 
@@ -48,7 +54,13 @@ class TodoController extends Controller
             'title' => [ 'sometimes', 'required','string','max:255',],
             'description' => ['sometimes','required','string','max:1000',],
             'is_completed' => ['sometimes','boolean',],
+            'list_id'=> ['sometimes','nullable','integer','exist:task_list,id'],
+            'due_date'=> ['sometimes','nullable','date'],
         ]);
+
+        if(array_key_exists('list_id',$validated) && $validated['list_id'] != null){
+            $request->user()->taskLists()->findOrFail($validated['list_id']);
+        }
 
         $todo = $request->user()->todos()->findOrFail($id);
 
