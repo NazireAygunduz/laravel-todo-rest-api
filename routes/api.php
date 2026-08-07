@@ -44,4 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/assignments/{id}/reject',[TaskAssignmentController::class,'reject']);
 
     Route::get('/notifications',[NotificationController::class,'index']);
+
+    Route::patch('/notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
 });

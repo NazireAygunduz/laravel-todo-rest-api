@@ -20,4 +20,20 @@ class NotificationController extends Controller
             'data' => $notifications,
         ], 200);
     }
+
+    public function markAsRead(Request $request, string $id): JsonResponse{
+    $notification = $request->user()->notifications()->findOrFail($id);
+    $notification->markAsRead(); 
+    return response()->json([
+        'message' => 'Bildirim okundu olarak işaretlendi.',
+    ], 200);
+    }
+
+    //tüm bildirimleri tek seferde okundu yapmak icin
+    public function markAllAsRead(Request $request): JsonResponse{
+    $request->user() ->unreadNotifications()->update(['read_at' => now(),]);
+    return response()->json([
+        'message' => 'Tüm bildirimler okundu olarak işaretlendi.',
+    ], 200);
+}
 }
