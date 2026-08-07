@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TaskAssignment;
+use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -36,6 +37,8 @@ class TaskAssignmentController extends Controller
             'assigned_by_user_id'=>$request->user()->id,
             'status'=>'pending',
         ]);
+
+      $assignment->user->notify(new TaskAssignedNotification($assignment));  
 
         return response()->json([
             'message' => 'Görev kullanıcıya atandı',

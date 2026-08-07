@@ -5,6 +5,7 @@ use App\Http\Controllers\TodoController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaskListController;
 use App\Http\Controllers\TaskAssignmentController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/test', function () {
     return response()->json([
@@ -41,4 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/assignments/incoming', [TaskAssignmentController::class, 'incoming']);
     Route::patch('/assignments/{id}/accept', [TaskAssignmentController::class, 'accept']);
     Route::patch('/assignments/{id}/reject',[TaskAssignmentController::class,'reject']);
+
+    Route::get('/notifications',[NotificationController::class,'index']);
 });
