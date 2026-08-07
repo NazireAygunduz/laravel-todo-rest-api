@@ -2,54 +2,34 @@
 
 namespace App\Notifications;
 
+use App\Models\TaskAssignment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Notifications\TaskAssignedNotification;
 
 class TaskAssignmentRespondedNotification extends Notification
 {
     use Queueable;
 
-    /**
-     * Create a new notification instance.
-     */
-    public function __construct()
-    {
-        //
+    public function __construct(public TaskAssignment $assignment) {
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
-     */
-    public function via(object $notifiable): array
-    {
-        return ['mail'];
+    public function via(object $notifiable): array{
+        return ['database'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-            ->line('The introduction to the notification.')
-            ->action('Notification Action', url('/'))
-            ->line('Thank you for using our application!');
-    }
-
-    /**
-     * Get the array representation of the notification.
-     *
-     * @return array<string, mixed>
-     */
-    public function toArray(object $notifiable): array
-    {
+    public function toArray(object $notifiable): array {
         return [
-            //
+            'type' => 'task_assignment_responded',
+            'assignment_id' => $this->assignment->id,
+            'todo_id' => $this->assignment->todo_id,
+            'todo_title' => $this->assignment->todo->title,
+
+            'responded_by_user_id' => $this->assignment->user_id,
+            'responded_by_name' => $this->assignment->user->name,
+
+            'status' => $this->assignment->status,
+            'rejection_note' => $this->assignment->rejection_note,
+            'responded_at' => $this->assignment->responded_at,
         ];
     }
 }

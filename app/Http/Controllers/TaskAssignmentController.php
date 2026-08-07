@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Notifications\TaskAssignmentRespondedNotification;
 use App\Models\TaskAssignment;
 use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
@@ -74,6 +75,8 @@ class TaskAssignmentController extends Controller
         'responded_at' => now(),
     ]);
 
+    $assignment->assignedBy->notify(new TaskAssignmentRespondedNotification($assignment));
+
     return response()->json([
         'message' => 'Görev kabul edildi.',
         'data' => $assignment,
@@ -97,6 +100,8 @@ class TaskAssignmentController extends Controller
         'rejection_note' => $validated['rejection_note'],
         'responded_at' => now(),
     ]);
+
+    $assignment->assignedBy->notify(new TaskAssignmentRespondedNotification($assignment));
 
     return response()->json([
         'message' => 'Görev reddedildi.',
